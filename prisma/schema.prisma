@@ -1,0 +1,346 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator zod {
+  provider = "zod-prisma"
+  output   = "./zod" // (default) the directory where generated zod schemas will be saved
+
+  relationModel = true // (default) Create and export both plain and related models.
+  // relationModel         = "default" // Do not export model without relations.
+  // relationModel         = false // Do not generate related model
+
+  modelCase = "PascalCase" // (default) Output models using pascal case (ex. UserModel, PostModel)
+  // modelCase             = "camelCase" // Output models using camel case (ex. userModel, postModel)
+
+  modelSuffix = "Model" // (default) Suffix to apply to your prisma models when naming Zod schemas
+
+  // useDecimalJs          = false // (default) represent the prisma Decimal type using as a JS number
+  useDecimalJs = true // represent the prisma Decimal type using Decimal.js (as Prisma does)
+
+  imports = null // (default) will import the referenced file in generated schemas to be used via imports.someExportedVariable
+
+  // https://www.prisma.io/docs/concepts/components/prisma-client/working-with-fields/working-with-json-fields#filtering-by-null-values
+  prismaJsonNullability    = true // (default) uses prisma's scheme for JSON field nullability
+  // prismaJsonNullability = false // allows null assignment to optional JSON fields
+  writeNullishInModelTypes = true // default is false
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String           @id @default(uuid())
+  name            String           @db.VarChar(255) /// @zod.max(255, { message: "O campo nome não poder ter tamanho maior que 255" })
+  username        String           @db.VarChar(255) /// @zod.max(255, { message: "O campo usuário não poder ter tamanho maior que 255" })
+  email           String           @db.VarChar(500) /// @zod.max(500, { message: "O campo email não poder ter tamanho maior que 500" })
+  email_verified  Boolean          @default(false)
+  password        String           @db.VarChar(255) /// @zod.max(255, { message: "O campo senha não poder ter tamanho maior que 255" })
+  remember_token  String?          @db.VarChar(1000) /// @zod.max(1000, { message: "O campo nome não poder ter tamanho maior que 1000" })
+  status_id       Int
+  status          Status           @relation(fields: [status_id], references: [id])
+  admin           Boolean?         @default(false)
+  approval        Int?
+  created_at      DateTime         @default(now())
+  updated_at      DateTime?
+  user_permission UserPermission[]
+  user_role       UserRole[]
+
+  @@unique([email, username])
+  @@map("tbusers")
+}
+
+model Menu {
+  id            Int       @id @default(autoincrement())
+  name          String    @db.VarChar(255) /// @zod.max(255, { message: "O campo nome não poder ter tamanho maior que 255" })
+  parameters    String?   @db.VarChar(1000) /// @zod.max(1000, { message: "O campo campo parametro não poder ter tamanho maior que 1000" })
+  route         String?   @db.VarChar(1000) /// @zod.max(1000, { message: "O campo campo rota não poder ter tamanho maior que 1000" })
+  icon          String    @db.Char(50) /// @zod.max(50, { message: "O campo icone não poder ter tamanho maior que 50" })
+  parent_id     Int?
+  component     String?   @db.VarChar(255) /// @zod.max(255, { message: "O campo component não poder ter tamanho maior que 255" })
+  has_childrens Boolean   @default(false)
+  order         Int?
+  disabled      Boolean   @default(false)
+  status_id     Int
+  status        Status    @relation(fields: [status_id], references: [id])
+  created_at    DateTime  @default(now())
+  updated_at    DateTime?
+
+  @@unique([route])
+  @@map("tbmenus")
+}
+
+model Status {
+  id            Int             @id @default(autoincrement())
+  name          String          @db.VarChar(255) /// @zod.max(255, { message: "O campo nome não poder ter tamanho maior que 255" })
+  description   String          @db.VarChar(255) /// @zod.max(255, { message: "O campo descrição não poder ter tamanho maior que 255" })
+  color         String?         @db.VarChar(50) /// @zod.max(50, { message: "O campo cor não poder ter tamanho maior que 50" })
+  created_at    DateTime        @default(now())
+  updated_at    DateTime?
+  user          User[]
+  Menu          Menu[]
+  Page          Page[]
+  ExpensiveType ExpenseType[]
+  Product       Product[]
+  Company       Company[]
+  CompanyBranch CompanyBranch[]
+  Person        Person[]
+  PersonContact PersonContact[]
+  PersonAddress PersonAddress[]
+
+  @@map("tbstatus")
+}
+
+model PageType {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(255) /// @zod.max(255, { message: "O campo nome não poder ter tamanho maior que 255" })
+  description String    @db.VarChar(500) /// @zod.max(500, { message: "O campo descrição não poder ter tamanho maior que 500" })
+  created_at  DateTime  @default(now())
+  updated_at  DateTime?
+
+  @@map("tbpagetypes")
+}
+
+model Page {
+  id         Int       @id @default(autoincrement())
+  status_id  Int
+  status     Status    @relation(fields: [status_id], references: [id])
+  created_at DateTime  @default(now())
+  updated_at DateTime?
+
+  @@map("tbpages")
+}
+
+model ExpenseType {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(255) /// @zod.max(255, { message: "O campo nome não poder ter tamanho maior que 255" })
+  description String    @db.VarChar(500) /// @zod.max(500, { message: "O campo descrição não poder ter tamanho maior que 500" })
+  status_id   Int
+  status      Status    @relation(fields: [status_id], references: [id])
+  created_at  DateTime  @default(now())
+  updated_at  DateTime?
+
+  @@map("tbexpensestypes")
+}
+
+model Permission {
+  id              Int              @id @default(autoincrement())
+  name            String           @db.VarChar(255) /// @zod.max(255, { message: "O campo nome não poder ter tamanho maior que 255" })
+  description     String           @db.VarChar(500) /// @zod.max(500, { message: "O campo descrição não poder ter tamanho maior que 500" })
+  created_at      DateTime         @default(now())
+  updated_at      DateTime?
+  role_permission RolePermission[]
+  user_permission UserPermission[]
+
+  @@map("tbpermissions")
+}
+
+model Role {
+  id              Int              @id @default(autoincrement())
+  name            String           @db.VarChar(255) /// @zod.max(255, { message: "O campo nome não poder ter tamanho maior que 255" })
+  description     String           @db.VarChar(500) /// @zod.max(500, { message: "O campo descrição não poder ter tamanho maior que 500" })
+  created_at      DateTime         @default(now())
+  updated_at      DateTime?
+  role_permission RolePermission[]
+  user_permission UserRole[]
+
+  @@map("tbroles")
+}
+
+model UserRole {
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id])
+  role_id Int
+  role    Role   @relation(fields: [role_id], references: [id])
+
+  @@id([user_id, role_id])
+  @@map("tbuserroles")
+}
+
+model RolePermission {
+  role_id       Int
+  permission_id Int
+  role          Role       @relation(fields: [role_id], references: [id])
+  permission    Permission @relation(fields: [permission_id], references: [id])
+
+  @@id([role_id, permission_id])
+  @@map("tbrolepermissions")
+}
+
+model UserPermission {
+  user_id       String
+  user          User       @relation(fields: [user_id], references: [id])
+  permission_id Int
+  permission    Permission @relation(fields: [permission_id], references: [id])
+
+  @@id([user_id, permission_id])
+  @@map("tbuserpermissions")
+}
+
+model Config {
+  id         Int
+  company_id Int
+  company    Company   @relation(fields: [company_id], references: [id])
+  param      String    @db.VarChar(100) /// @zod.max(100, { message: "O campo parametro não poder ter tamanho maior que 100" })
+  value      String?   @db.VarChar(1000) /// @zod.max(1000, { message: "O campo valor não poder ter tamanho maior que 1000" })
+  created_at DateTime  @default(now())
+  updated_at DateTime?
+
+  @@id([id, param])
+  @@map("tbconfigs")
+}
+
+model Module {
+  id         Int       @id
+  name       String    @db.VarChar(255) /// @zod.max(255, { message: "O campo nome não poder ter tamanho maior que 255" })
+  company_id Int
+  company    Company   @relation(fields: [company_id], references: [id])
+  created_at DateTime  @default(now())
+  updated_at DateTime?
+
+  @@map("tbmodules")
+}
+
+model Product {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(255) /// @zod.max(255, { message: "O campo nome não poder ter tamanho maior que 255" })
+  description String    @db.VarChar(255) /// @zod.max(255, { message: "O campo descricao não poder ter tamanho maior que 255" })
+  codbar      String    @db.VarChar(255) /// @zod.max(255, { message: "O campo código de barra não poder ter tamanho maior que 255" })
+  status_id   Int
+  status      Status    @relation(fields: [status_id], references: [id])
+  created_at  DateTime  @default(now())
+  updated_at  DateTime?
+
+  @@unique([codbar])
+  @@map("tbproducts")
+}
+
+model Company {
+  id              Int             @id @default(autoincrement())
+  name            String          @db.VarChar(255) /// @zod.max(255, { message: "O campo nome não poder ter tamanho maior que 255" })
+  status_id       Int
+  status          Status          @relation(fields: [status_id], references: [id])
+  approval        Int?
+  // person          Int
+  companyBranches CompanyBranch[]
+  created_at      DateTime        @default(now())
+  updated_at      DateTime?
+  config          Config[]
+  module          Module[]
+
+  @@map("tbcompanys")
+}
+
+model CompanyBranch {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(255) /// @zod.max(255, { message: "O campo nome não poder ter tamanho maior que 255" })
+  approval   Int?
+  company_id Int
+  company    Company   @relation(fields: [company_id], references: [id])
+  status_id  Int
+  status     Status    @relation(fields: [status_id], references: [id])
+  master     Boolean   @default(false)
+  // person     Int
+  created_at DateTime  @default(now())
+  updated_at DateTime?
+
+  @@map("tbcompanybranches")
+}
+
+model Person {
+  id            Int             @id @default(autoincrement())
+  name          String          @db.VarChar(255) /// @zod.max(255, { message: "O campo nome não poder ter tamanho maior que 255" })
+  tag           String?         @db.VarChar(2000) /// @zod.max(2000, { message: "O campo tag não poder ter tamanho maior que 2000" })
+  approval      Int?
+  juricical     Boolean         @default(false)
+  cpf_cnpj      String?         @db.VarChar(14) /// @zod.max(14, { message: "O campo cpf_cnpj não poder ter tamanho maior que 14" })
+  status_id     Int
+  status        Status          @relation(fields: [status_id], references: [id])
+  created_at    DateTime        @default(now())
+  updated_at    DateTime?
+  personContact PersonContact[]
+  personAddress PersonAddress[]
+
+  @@map("tbpersons")
+}
+
+model PersonContact {
+  id         Int       @id @default(autoincrement())
+  master     Boolean   @default(false)
+  person_id  Int
+  person     Person    @relation(fields: [person_id], references: [id])
+  email      String    @db.VarChar(500) /// @zod.max(500, { message: "O campo email não poder ter tamanho maior que 500" })
+  phone      String    @db.VarChar(20)
+  status_id  Int
+  status     Status    @relation(fields: [status_id], references: [id])
+  created_at DateTime  @default(now())
+  updated_at DateTime?
+
+  @@index([id, master])
+  @@map("tbpersoncontacts")
+}
+
+model PersonAddress {
+  id         Int       @id @default(autoincrement())
+  person_id  Int
+  person     Person    @relation(fields: [person_id], references: [id])
+  cep        String    @db.VarChar(8) /// @zod.max(8, { message: "O campo CPF não poder ter tamanho maior que 8" })
+  fiscal     Boolean   @default(false)
+  country_id Int
+  state_id   Int
+  city_id    Int
+  district   Int
+  number     Int
+  status_id  Int
+  status     Status    @relation(fields: [status_id], references: [id])
+  created_at DateTime  @default(now())
+  updated_at DateTime?
+
+  @@map("tbpersonaddresses")
+}
+
+model Country {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(255) /// @zod.max(255, { message: "O campo nome não poder ter tamanho maior que 255" })
+  acronym    String    @db.Char(2) /// @zod.max(2, { message: "O campo sigla não poder ter tamanho maior que 2" })
+  created_at DateTime  @default(now())
+  updated_at DateTime?
+  states     State[]
+  cities     City[]
+
+  @@unique([name, acronym])
+  @@map("tbcountries")
+}
+
+model State {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(255) /// @zod.max(255, { message: "O campo nome não poder ter tamanho maior que 255" })
+  country_id Int
+  country    Country   @relation(fields: [country_id], references: [id])
+  cities     City[]
+  acronym    String    @db.Char(2) /// @zod.max(2, { message: "O campo sigla não poder ter tamanho maior que 2" })
+  created_at DateTime  @default(now())
+  updated_at DateTime?
+
+  @@unique([name, acronym])
+  @@map("tbstates")
+}
+
+model City {
+  id         Int       @id @default(autoincrement())
+  name       String /// @zod.max(255, { message: "O campo nome não poder ter tamanho maior que 255" })
+  country_id Int
+  country    Country   @relation(fields: [country_id], references: [id])
+  state_id   Int
+  state      State     @relation(fields: [state_id], references: [id])
+  created_at DateTime  @default(now())
+  updated_at DateTime?
+
+  @@unique([name])
+  @@map("tbcities")
+}
