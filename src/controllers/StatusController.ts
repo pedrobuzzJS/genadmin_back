@@ -8,7 +8,7 @@ export default class StatusController {
         let status: any = "status";
 
         if (id) {
-            data = await client["status"].findFirst({
+            data = await client[`status`].findFirst({
                 where: {
                     id: Number(id)
                 },
