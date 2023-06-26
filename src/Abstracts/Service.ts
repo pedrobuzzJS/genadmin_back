@@ -20,5 +20,5 @@ export default class Service {
     this.permissionCreate = permissionCreate;
     this.permissionUpdate = permissionUpdate;
     this.permissionDelete = permissionDelete;
-  }
-}
+  };
+};

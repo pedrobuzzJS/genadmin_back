@@ -226,6 +226,7 @@ model Company {
   status_id       Int
   status          Status          @relation(fields: [status_id], references: [id])
   approval        Int?
+  plan            String
   // person          Int
   companyBranches CompanyBranch[]
   created_at      DateTime        @default(now())
@@ -233,7 +234,7 @@ model Company {
   config          Config[]
   module          Module[]
 
-  @@map("tbcompanys")
+  @@map("tbcompanies")
 }
 
 model CompanyBranch {
