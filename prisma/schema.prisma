@@ -198,8 +198,6 @@ model Config {
 model Module {
   id         Int       @id
   name       String    @db.VarChar(255) /// @zod.max(255, { message: "O campo nome não poder ter tamanho maior que 255" })
-  company_id Int
-  company    Company   @relation(fields: [company_id], references: [id])
   created_at DateTime  @default(now())
   updated_at DateTime?
 
@@ -232,7 +230,6 @@ model Company {
   created_at      DateTime        @default(now())
   updated_at      DateTime?
   config          Config[]
-  module          Module[]
 
   @@map("tbcompanies")
 }
