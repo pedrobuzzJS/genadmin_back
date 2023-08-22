@@ -7,6 +7,8 @@ export const StatusModel = z.object({
   name: z.string().max(255, { message: "O campo nome não poder ter tamanho maior que 255" }),
   description: z.string().max(255, { message: "O campo descrição não poder ter tamanho maior que 255" }),
   color: z.string().max(50, { message: "O campo cor não poder ter tamanho maior que 50" }).nullish(),
+  start: z.boolean().nullish(),
+  end: z.boolean().nullish(),
   created_at: z.date(),
   updated_at: z.date().nullish(),
 })

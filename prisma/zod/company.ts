@@ -1,6 +1,6 @@
 import * as z from "zod"
 import * as imports from "../null"
-import { CompleteStatus, RelatedStatusModel, CompleteCompanyBranch, RelatedCompanyBranchModel, CompleteConfig, RelatedConfigModel, CompleteModule, RelatedModuleModel } from "./index"
+import { CompleteStatus, RelatedStatusModel, CompleteCompanyBranch, RelatedCompanyBranchModel, CompleteConfig, RelatedConfigModel } from "./index"
 
 export const CompanyModel = z.object({
   id: z.number().int(),
@@ -16,7 +16,6 @@ export interface CompleteCompany extends z.infer<typeof CompanyModel> {
   status: CompleteStatus
   companyBranches: CompleteCompanyBranch[]
   config: CompleteConfig[]
-  module: CompleteModule[]
 }
 
 /**
@@ -28,5 +27,4 @@ export const RelatedCompanyModel: z.ZodSchema<CompleteCompany> = z.lazy(() => Co
   status: RelatedStatusModel,
   companyBranches: RelatedCompanyBranchModel.array(),
   config: RelatedConfigModel.array(),
-  module: RelatedModuleModel.array(),
 }))

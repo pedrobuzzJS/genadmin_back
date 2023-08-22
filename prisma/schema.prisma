@@ -80,6 +80,8 @@ model Status {
   name          String          @db.VarChar(255) /// @zod.max(255, { message: "O campo nome não poder ter tamanho maior que 255" })
   description   String          @db.VarChar(255) /// @zod.max(255, { message: "O campo descrição não poder ter tamanho maior que 255" })
   color         String?         @db.VarChar(50) /// @zod.max(50, { message: "O campo cor não poder ter tamanho maior que 50" })
+  start         Boolean?
+  end           Boolean?
   created_at    DateTime        @default(now())
   updated_at    DateTime?
   user          User[]
