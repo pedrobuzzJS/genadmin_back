@@ -1,57 +1,16 @@
-import { ApiError } from "../helpers/Error";
-import { client } from "../server/prisma/client";
+import { DefaultControler } from "../Abstracts/Controller";
 import { Request, Response } from "express";
+import { MenuService } from "../Services/MenuService";
+export default class ModulesController extends DefaultControler {
+    constructor() {
+        super(new MenuService)
+    }
 
-export default class MenuController {
-    static async list(request: Request, response: Response) {
-        const { id } = request.query;
-        let data;
+    public async list(request: Request, response: Response) {
+        return response.json(await this.service.list());
+    }
 
-        if (id) {
-            data = await client["menu"].findFirst({
-                where: {
-                    id: Number(id)
-                },
-                orderBy: {
-                    id: "asc"
-                }
-            });   
-        } else {
-            data = await client["menu"].findMany({
-                orderBy: {
-                    id: "asc"
-                }
-            });
-        }
-
-        if (!data) {
-            throw new ApiError("Sem retorno de registro do banco", 404)
-        } else {
-            return response.json(data);
-        };
-    };
-    
-    static async delete(request: Request, response: Response) {
-        const { id } = request.query;
-        try {
-            if (id) {
-                const menus = await client["menu"].delete({
-                    where: {
-                        id: Number(id)
-                    }
-                })
-                if (menus) {
-                    return response.json(
-                        {
-                            "msg" : "Successes"
-                        }
-                    );
-                };
-            };
-        } catch (error) {
-            return response.status(500).json({
-                message: error
-            });
-        };
-    };
+    public async show(request: Request, response: Response) {
+        return response.json(await this.service.show(request.params));
+    }
 };

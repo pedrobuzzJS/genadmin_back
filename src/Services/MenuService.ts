@@ -1,14 +1,17 @@
-import { client } from "../server/prisma/client";
-import { Response } from "express";
+import DefaultService from "../Abstracts/Service";
+import { Menu } from "../Models/Menu";
 
-export default class MenuService {
-	static async list(reponser: Response) {
-		const data = await client.menu.findMany({
-		    orderBy: {
-		        id: "asc",
-		    },
-		    // take: 5
-		});
-		return reponser.json(data);
-	}
+export class MenuService extends DefaultService {
+  public constructor() {
+    super()
+  }
+  public async list() {
+    let menu = new Menu()
+    return await menu.get()
+  }
+
+  public async show(params: number) {
+    const [ id ] = Object.values(params)
+    return await new Menu().id(id)
+  }
 }
