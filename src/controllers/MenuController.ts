@@ -1,7 +1,7 @@
 import { DefaultControler } from "../Abstracts/Controller";
 import { Request, Response } from "express";
 import { MenuService } from "../Services/MenuService";
-export default class ModulesController extends DefaultControler {
+export default class MenudController extends DefaultControler {
     constructor() {
         super(new MenuService)
     }

@@ -1,11 +1,10 @@
-import { Request, Response } from "express";
-import { StatusService } from "../Services/StatusService";
 import { DefaultControler } from "../Abstracts/Controller";
+import { Request, Response } from "express";
+import { ExpensesTypesService } from "../Services/ExpensesTypesService";
 
-export default class StatusController extends DefaultControler {
-    public constructor()
-    {
-        super(new StatusService)
+export default class ExpensesTypesController extends DefaultControler {
+    constructor() {
+        super(new ExpensesTypesService)
     }
 
     public async list(request: Request, response: Response) {

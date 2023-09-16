@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "tbmenus" ALTER COLUMN "icon" SET DATA TYPE VARCHAR(50);

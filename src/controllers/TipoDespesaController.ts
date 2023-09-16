@@ -1,4 +1,4 @@
-import { ApiError } from "../helpers/Error";
+import { ApiError } from "../Helpers/Error";
 import { client } from "../server/prisma/client";
 import { Request, Response } from "express";
 

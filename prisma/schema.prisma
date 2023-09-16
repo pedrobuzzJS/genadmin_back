@@ -60,7 +60,7 @@ model Menu {
   name          String    @db.VarChar(255) /// @zod.max(255, { message: "O campo nome não poder ter tamanho maior que 255" })
   parameters    String?   @db.VarChar(1000) /// @zod.max(1000, { message: "O campo campo parametro não poder ter tamanho maior que 1000" })
   route         String?   @db.VarChar(1000) /// @zod.max(1000, { message: "O campo campo rota não poder ter tamanho maior que 1000" })
-  icon          String    @db.Char(50) /// @zod.max(50, { message: "O campo icone não poder ter tamanho maior que 50" })
+  icon          String    @db.VarChar(50) /// @zod.max(50, { message: "O campo icone não poder ter tamanho maior que 50" })
   parent_id     Int?
   component     String?   @db.VarChar(255) /// @zod.max(255, { message: "O campo component não poder ter tamanho maior que 255" })
   has_childrens Boolean   @default(false)

@@ -1,4 +1,4 @@
-import { getColumnsToSearch } from "../helpers/Functions";
+import { getColumnsToSearch } from "../Helpers/Functions";
 import { client } from "../server/prisma/client";
 
 export abstract class DefaultModel {
@@ -10,7 +10,6 @@ export abstract class DefaultModel {
 		model: any,
 	) {
 		this.model = client[model as keyof object];
-		console.log(this.perPage)
 	};
 
 	public async get(columns?: string[]) {

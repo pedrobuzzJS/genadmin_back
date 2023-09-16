@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { ApiError } from "../helpers/Error";
+import { ApiError } from "../Helpers/Error";
 import { Prisma } from "@prisma/client";
 
 export const errorMiddleware = ( 
