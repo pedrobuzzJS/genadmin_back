@@ -27,10 +27,7 @@ app.use(
 );
     
 app.use(Routes);
-
 app.use(errorMiddleware);
-
-export { app };
+import global from "../types/global";
 
 export default app;
-
